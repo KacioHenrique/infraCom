@@ -24,7 +24,3 @@ while 1:
     
     # sock.accept()
     
-    
-
-
-
