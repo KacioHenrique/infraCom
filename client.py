@@ -1,53 +1,36 @@
+# https://askubuntu.com/questions/907246/how-to-disable-systemd-resolved-in-ubuntu
+
 import socket
 import argparse
 
+clientSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+
+dnsIP = "172.31.91.59"
 dnsPort = 53
 
-clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--dnsIP', '-d', type=str, help='IP do DNS para conexão')
-parser.add_argument('--hostname', '-h', type=str, help='Nome de server no qual o client quer se conectar')
-args = parser.parse_args()
-
 try:
-	clientSocket.connect((serverName, serverPort))
-except Exception:
+	clientSocket.connect((dnsIP, dnsPort))
+	print("connect dns")
+except Exception as e:
+	print(e)
 	pass
 	
 try:
-	dnsIP = args.dnsIP
-	hostname = args.hostname
+	hostname = "google.com"
 
-	if command == "GET" or command == "GETPROG":
-		message = command + "-" + contents
-	elif command == "POST":
-		message = command + '-' + toFile + '-' + contents
-		
-	clientSocket.send(message.encode()) # send command and contents to server
-	print("I send " + message)
+	clientSocket.send(hostname.encode()) # send hostname to server
+	serverIP = clientSocket.recv(1024) # receive from server
 
-	# change path according command
-	if command == "GET" or command == "GETPROG":
-		path = toFile
-
-		# save contents in output files
-		with open(path, "wb") as f:
-			data = clientSocket.recv(1024) # receive from server
-			while data:
-				f.write(data)
-				data = clientSocket.recv(1024)
+	clientSocket.close()
+	clientSocket.connect((dnsIP, dnsPort))
 	
-		if command == "GETPROG":
-			print("running " + path + "\n\n")
-			os.system("chmod u+x " + path) # desprotect program
-			os.system("./" + path) # run program
-		
-		clientSocket.close()
+	while 1:
+		pass
 
 except KeyboardInterrupt:
 	escape = True
-except Exception:
+except Exception as e:
+	print(e)
 	clientSocket.close()
 
 clientSocket.close()

@@ -1,6 +1,6 @@
 import socket
 
-class server():
+class Server():
     def __init__(self,dnsPort,dnsIp):
         self.ip = "127.0.0.1"
         self.port = 5000
@@ -20,4 +20,4 @@ class server():
         
         
         
-server()
+Server()

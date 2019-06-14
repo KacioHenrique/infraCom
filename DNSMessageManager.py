@@ -47,7 +47,7 @@
 #                 multiple owner names because of aliases.  The AA bit
 
 
-class DNSMessageReader:
+class DNSMessageManager:
     def __init__(self):
         pass
     
@@ -95,3 +95,21 @@ class DNSMessageReader:
         ARCount = (data[10] << 8) + data[11]
         return ARCount
 
+
+    @staticmethod
+    def buildResponse(data):
+        flags = DNSMessageManager.getFlags(data)
+        if flags["QR"]:
+            # not a query so must be ignored
+            return bytes(0)
+        
+        flags["QR"] = 1
+        flags["RA"] = flags["RD"]
+        flags["AD"] = 0
+        flags["CD"] = 1
+        
+        pass
+    
+    @staticmethod
+    def modifyHeader(data, newFlags):
+        pass

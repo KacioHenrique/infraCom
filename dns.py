@@ -1,6 +1,6 @@
 import socket
 from DNSManager import DNSManager
-from DNSMessageReader import DNSMessageReader
+from DNSMessageManager import DNSMessageManager
 
 port = 53
 ip = socket.gethostbyname(socket.gethostname())
@@ -18,9 +18,9 @@ while 1:
     print(type(data))
     print(address)
     
-    print("id", DNSMessageReader.getId(data))
+    print("id", DNSMessageManager.getId(data))
     print("flags:")
-    print(DNSMessageReader.getFlags(data))
+    print(DNSMessageManager.getFlags(data))
     
     # sock.accept()
-    
+    sock.sendto(b'200 OK', address)
