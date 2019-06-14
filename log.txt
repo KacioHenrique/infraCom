@@ -1,0 +1,91 @@
+{'QR': 0, 'Opcode': 0, 'AA': 0, 'TC': 0, 'RD': 1, 'RA': 0, 'Z': 0, 'AD': 2, 'RCODE': 0}
+<class 'bytes'>
+('172.31.91.59', 40209)
+id
+1189
+flags:
+{'QR': 0, 'Opcode': 0, 'AA': 0, 'TC': 0, 'RD': 1, 'RA': 0, 'Z': 0, 'AD': 2, 'RCODE': 0}
+<class 'bytes'>
+('172.31.91.59', 40209)
+id
+1189
+flags:
+{'QR': 0, 'Opcode': 0, 'AA': 0, 'TC': 0, 'RD': 1, 'RA': 0, 'Z': 0, 'AD': 2, 'RCODE': 0}
+<class 'bytes'>
+('172.31.91.59', 40209)
+id
+1189
+flags:
+{'QR': 0, 'Opcode': 0, 'AA': 0, 'TC': 0, 'RD': 1, 'RA': 0, 'Z': 0, 'AD': 2, 'RCODE': 0}
+<class 'bytes'>
+('172.31.91.59', 33786)
+id
+26479
+flags:
+{'QR': 0, 'Opcode': 13, 'AA': 1, 'TC': 1, 'RD': 1, 'RA': 0, 'Z': 1, 'AD': 2, 'RCODE': 7}
+<class 'bytes'>
+('172.31.91.59', 57736)
+id
+26479
+flags:
+{'QR': 0, 'Opcode': 13, 'AA': 1, 'TC': 1, 'RD': 1, 'RA': 0, 'Z': 1, 'AD': 2, 'RCODE': 7}
+<class 'bytes'>
+('172.31.91.59', 42807)
+id
+26479
+flags:
+{'QR': 0, 'Opcode': 13, 'AA': 1, 'TC': 1, 'RD': 1, 'RA': 0, 'Z': 1, 'AD': 2, 'RCODE': 7}
+<class 'bytes'>
+('172.31.91.59', 36735)
+id
+30583
+flags:
+{'QR': 0, 'Opcode': 14, 'AA': 1, 'TC': 1, 'RD': 1, 'RA': 0, 'Z': 0, 'AD': 2, 'RCODE': 14}
+<class 'bytes'>
+('172.31.91.59', 57124)
+id
+30583
+flags:
+{'QR': 0, 'Opcode': 14, 'AA': 1, 'TC': 1, 'RD': 1, 'RA': 0, 'Z': 0, 'AD': 2, 'RCODE': 14}
+<class 'bytes'>
+('172.31.91.59', 53162)
+id
+30583
+flags:
+{'QR': 0, 'Opcode': 14, 'AA': 1, 'TC': 1, 'RD': 1, 'RA': 0, 'Z': 0, 'AD': 2, 'RCODE': 14}
+<class 'bytes'>
+('172.31.91.59', 52425)
+id
+26479
+flags:
+{'QR': 0, 'Opcode': 13, 'AA': 1, 'TC': 1, 'RD': 1, 'RA': 0, 'Z': 1, 'AD': 2, 'RCODE': 7}
+<class 'bytes'>
+('172.31.91.59', 43586)
+id
+12623
+flags:
+{'QR': 0, 'Opcode': 0, 'AA': 0, 'TC': 0, 'RD': 1, 'RA': 0, 'Z': 0, 'AD': 2, 'RCODE': 0}
+<class 'bytes'>
+('172.31.91.59', 40495)
+id
+26479
+flags:
+{'QR': 0, 'Opcode': 13, 'AA': 1, 'TC': 1, 'RD': 1, 'RA': 0, 'Z': 1, 'AD': 2, 'RCODE': 7}
+<class 'bytes'>
+('172.31.91.59', 58962)
+id
+16865
+flags:
+{'QR': 0, 'Opcode': 0, 'AA': 0, 'TC': 0, 'RD': 1, 'RA': 0, 'Z': 0, 'AD': 2, 'RCODE': 0}
+<class 'bytes'>
+('172.31.91.59', 37095)
+id
+12492
+flags:
+{'QR': 0, 'Opcode': 0, 'AA': 0, 'TC': 0, 'RD': 1, 'RA': 0, 'Z': 0, 'AD': 2, 'RCODE': 0}
+<class 'bytes'>
+('172.31.91.59', 44409)
+id
+10677
+flags:
+{'QR': 0, 'Opcode': 0, 'AA': 0, 'TC': 0, 'RD': 1, 'RA': 0, 'Z': 0, 'AD': 2, 'RCODE': 0}

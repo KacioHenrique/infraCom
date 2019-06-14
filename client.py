@@ -16,16 +16,17 @@ except Exception as e:
 	pass
 	
 try:
-	hostname = "google.com"
+	hostname = input("Hostname? ")
 
 	clientSocket.send(hostname.encode()) # send hostname to server
 	serverIP = clientSocket.recv(1024) # receive from server
-
+	print("serverIP = " + str(serverIP))
+	
 	clientSocket.close()
 	clientSocket.connect((dnsIP, dnsPort))
 	
 	while 1:
-		pass
+		data = clientSocket.recv(1024)
 
 except KeyboardInterrupt:
 	escape = True

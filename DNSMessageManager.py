@@ -107,9 +107,30 @@ class DNSMessageManager:
         flags["RA"] = flags["RD"]
         flags["AD"] = 0
         flags["CD"] = 1
+        # change QDCount
+        dt = bytearray(data)
+        dt[4] = 0
+        dt[5] = 1
+        dt[6] = 0
+        dt[7] = 1
+        dt[8] = 0
+        dt[9] = 0
+        dt[10] = 0
+        dt[11] = 0
+        msg = DNSMessageManager.modifyHeader(dt, flags)
         
-        pass
+        return bytes(msg)
     
     @staticmethod
-    def modifyHeader(data, newFlags):
-        pass
+    def modifyHeader(data, flags):
+        data[2] ^= (flags["QR"] << 7)
+        data[2] ^= (flags["Opcode"] << 3)
+        data[2] ^= (flags["AA"] << 2)
+        data[2] ^= (flags["TC"] << 1)
+        data[2] ^= (flags["RD"])
+        data[3] ^= (flags["RA"] << 7)
+        data[3] ^= (flags["Z"] << 6)
+        data[3] ^= (flags["AD"] << 4)
+        data[3] ^= (flags["RCODE"])
+        
+        return data
