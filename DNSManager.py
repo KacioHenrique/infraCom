@@ -16,5 +16,8 @@ class DNSManager():
     @staticmethod
     def getHostByName(hostname):
         # TODO: Implement the local search before the OS search
-        name = socket.gethostbyname(hostname)
+        try:
+            name = socket.gethostbyname(hostname)
+        except:
+            name = "0.0.0.0"
         return name

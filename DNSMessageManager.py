@@ -117,16 +117,10 @@ class DNSMessageManager:
         dt[10] = 0
         dt[11] = 0
         msg = DNSMessageManager.setResponseHeader(dt, flags)
-        
-        print("--------------------")
-        print(DNSMessageManager.getFlags(msg))
-        
-        
-        msg = b"".join((
-            msg,
-            DNSMessageManager.getRawQuery(data),
-            DNSMessageManager.buildStaticResponse(data)
-        ))
+        msg = msg[:12]
+
+        msg += bytearray(DNSMessageManager.getRawQuery(data))
+        msg += bytearray(DNSMessageManager.buildStaticResponse(data))
 
         return bytes(msg)
     
@@ -181,43 +175,15 @@ class DNSMessageManager:
         pt = host.split(".")
         pt = [int(n) for n in pt]
         hostbytes = bytearray(pt)
-        
-        res = b"".join((
-            b"\xc0\x0c",
-            bytes([0, query["rrtype"]]),
-            bytes([0, query["qclass"]]),
-            ttl,
-            rdlength,
-            bytes(hostbytes)
-            ))
-        
-        return res
 
-    # TODO: Make this function implementation
-    # def to_bytes(self):
-    #     return b"".join((
-    #         super(Response, self).to_bytes(),
-    #         b"\xc0\x0c",                      # Pointer/Offset
-    #         int_to_bytes(self.query.rrtype),  # TYPE: A
-    #         int_to_bytes(self.query.qclass),  # CLASS: IN
-    #         int_to_bytes(self.ttl, 8),        # TTL: 60
-    #         int_to_bytes(4),                  # RDLENGTH: 4 octets
-    #         _bytes(int(octet) for octet in self.address.split('.')),
-    #     ))
-    
-    # DONE: Extract the query from the request
-    # def from_bytes(cls, data):
-    #     ini = 12
-    #     lon = _intify(data[ini])
-    #     labels = []
-    #     while lon != 0:
-    #         part = data[ini + 1:ini + lon + 1]
-    #         labels.append(part.decode("latin-1"))
-    #         ini += lon + 1
-    #         lon = _intify(data[ini])
-    #     rrtype = bytes_to_int(data[ini + 1:ini + 3])
-    #     qclass = bytes_to_int(data[ini + 3:ini + 5])
-    #     return cls(rrtype, tuple(labels), qclass)
+        res = bytearray([0xc0, 0x0c])
+        res += bytearray([0, query["rrtype"]])
+        res += bytearray([0, query["qclass"]])
+        res += bytearray(ttl)
+        res += bytearray(rdlength)
+        res += bytearray(hostbytes)
+        
+        return bytes(res)
     
     @staticmethod
     def getQuery(data):
@@ -246,5 +212,25 @@ class DNSMessageManager:
     def getRawQuery(data):
         begin = 12
         messageSize = int(data[12])
+        begin = 12
+        messageSize = int(data[12])
+        res = bytearray([])
         
-        return data[begin + 1: begin + messageSize + 1]
+        while messageSize != 0:
+            res = res + data[begin: begin + messageSize + 1]
+            begin += messageSize + 1
+            messageSize = int(data[begin])
+
+        res = res + data[begin:begin + 5]
+        res = bytes(res)
+        return res
+        
+        # return data[begin + 1: begin + messageSize + 1]
+
+
+
+
+
+
+
+

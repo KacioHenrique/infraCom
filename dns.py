@@ -4,7 +4,10 @@ from DNSMessageManager import DNSMessageManager
 from DNSUtils import *
 
 port = 53
-ip = socket.gethostbyname(socket.gethostname())
+try:
+    ip = socket.gethostbyname(socket.gethostname())
+except:
+    ip = socket.gethostbyname("localhost")
 
 sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 sock.bind((ip,port))
