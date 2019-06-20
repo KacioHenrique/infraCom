@@ -35,8 +35,7 @@ while 1:
     
     res = DNSMessageManager.buildResponse(data)
     
-    print("res:")
-    printAscii(res)
+    print([hex(a) for a in res])
     
     # sock.accept()
     sock.sendto(res, address)

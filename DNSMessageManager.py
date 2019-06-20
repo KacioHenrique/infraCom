@@ -71,9 +71,6 @@ class DNSMessageManager:
         flags["AD"] = (data[3] >> 4) & 0b11
         flags["RCODE"] = data[3] & 0b1111
         
-        print(data[2])
-        print(data[3])
-        
         return flags
         
     @staticmethod
@@ -108,6 +105,7 @@ class DNSMessageManager:
         flags["RA"] = flags["RD"]
         flags["AD"] = 0
         flags["CD"] = 1
+        
         # change QDCount
         dt = bytearray(data)
         dt[4] = 0
@@ -118,9 +116,15 @@ class DNSMessageManager:
         dt[9] = 0
         dt[10] = 0
         dt[11] = 0
-        msg = DNSMessageManager.modifyHeader(dt, flags)
+        msg = DNSMessageManager.setResponseHeader(dt, flags)
+        
+        print("--------------------")
+        print(DNSMessageManager.getFlags(msg))
+        
+        
         msg = b"".join((
             msg,
+            DNSMessageManager.getRawQuery(data),
             DNSMessageManager.buildStaticResponse(data)
         ))
 
@@ -139,14 +143,38 @@ class DNSMessageManager:
         data[3] ^= (flags["RCODE"])
         
         return data
+    
+    @staticmethod
+    def setResponseHeader(data, flags):
+        data[2] = 0
+        data[3] = 0
+        data[4] = 0
+        data[5] = 0b1
+        data[6] = 0
+        data[7] = 0b1
+        data[8] = 0
+        data[9] = 0
+        data[10] = 0
+        data[11] = 0
+        data[2] ^= (flags["QR"] << 7)
+        data[2] ^= (flags["Opcode"] << 3)
+        data[2] ^= (flags["AA"] << 2)
+        data[2] ^= (flags["TC"] << 1)
+        data[2] ^= (flags["RD"])
+        data[3] ^= (flags["RA"] << 7)
+        data[3] ^= (flags["Z"] << 6)
+        data[3] ^= (flags["AD"] << 4)
+        data[3] ^= (flags["RCODE"])
+        
+        return data
 
     @staticmethod
     def buildStaticResponse(data):
         
         # TODO: Implement query extraction from the message
         query = DNSMessageManager.getQuery(data)
-        ttl = bytes(60)
-        rdlength = bytes(4)
+        ttl = bytes([0,0,0,60])
+        rdlength = bytes([0,4])
         
         hostname = ".".join(query["hostparts"])
         host = DNSManager.getHostByName(hostname)
@@ -155,13 +183,14 @@ class DNSMessageManager:
         hostbytes = bytearray(pt)
         
         res = b"".join((
-            b"\xc0\xc0",
-            bytes(query["rrtype"]),
-            bytes(query["qclass"]),
+            b"\xc0\x0c",
+            bytes([0, query["rrtype"]]),
+            bytes([0, query["qclass"]]),
             ttl,
             rdlength,
             bytes(hostbytes)
             ))
+        
         return res
 
     # TODO: Make this function implementation
@@ -213,4 +242,9 @@ class DNSMessageManager:
         
         return query
     
-    
+    @staticmethod
+    def getRawQuery(data):
+        begin = 12
+        messageSize = int(data[12])
+        
+        return data[begin + 1: begin + messageSize + 1]
