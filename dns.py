@@ -1,33 +1,45 @@
 import socket
 from DNSManager import DNSManager
 from DNSMessageManager import DNSMessageManager
+from DNSUtils import *
 
 port = 53
 ip = socket.gethostbyname(socket.gethostname())
-
-
-def printf(message):
-    with open('log.txt', 'a+') as f:
-        f.write(str(message) + "\n")  # Python 3.x
 
 sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 sock.bind((ip,port))
 
 manager = DNSManager()
 
-print(ip)
+printf(ip)
 
-print("dns server running")
+printf("dns server running")
 while 1: 
     data, address = sock.recvfrom(512)
-    printf(type(data))
-    printf(address)
     
+    printf(address)
     printf("id")
     printf(DNSMessageManager.getId(data))
     printf("flags:")
     printf(DNSMessageManager.getFlags(data))
+    printAscii(data)
+    
+    query = DNSMessageManager.getQuery(data)
+    printf(query)
+    
+    hostname = ".".join(query["hostparts"])
+    printf(hostname)
+    
+    host = DNSManager.getHostByName(hostname)
+    printf(host)
     
     res = DNSMessageManager.buildResponse(data)
+    
+    print("res:")
+    printAscii(res)
+    
     # sock.accept()
     sock.sendto(res, address)
+
+# id
+# 12623

@@ -46,6 +46,7 @@
 #                 Note that the contents of the answer section may have
 #                 multiple owner names because of aliases.  The AA bit
 
+from DNSManager import DNSManager
 
 class DNSMessageManager:
     def __init__(self):
@@ -118,7 +119,11 @@ class DNSMessageManager:
         dt[10] = 0
         dt[11] = 0
         msg = DNSMessageManager.modifyHeader(dt, flags)
-        
+        msg = b"".join((
+            msg,
+            DNSMessageManager.buildStaticResponse(data)
+        ))
+
         return bytes(msg)
     
     @staticmethod
@@ -134,3 +139,78 @@ class DNSMessageManager:
         data[3] ^= (flags["RCODE"])
         
         return data
+
+    @staticmethod
+    def buildStaticResponse(data):
+        
+        # TODO: Implement query extraction from the message
+        query = DNSMessageManager.getQuery(data)
+        ttl = bytes(60)
+        rdlength = bytes(4)
+        
+        hostname = ".".join(query["hostparts"])
+        host = DNSManager.getHostByName(hostname)
+        pt = host.split(".")
+        pt = [int(n) for n in pt]
+        hostbytes = bytearray(pt)
+        
+        res = b"".join((
+            b"\xc0\xc0",
+            bytes(query["rrtype"]),
+            bytes(query["qclass"]),
+            ttl,
+            rdlength,
+            bytes(hostbytes)
+            ))
+        return res
+
+    # TODO: Make this function implementation
+    # def to_bytes(self):
+    #     return b"".join((
+    #         super(Response, self).to_bytes(),
+    #         b"\xc0\x0c",                      # Pointer/Offset
+    #         int_to_bytes(self.query.rrtype),  # TYPE: A
+    #         int_to_bytes(self.query.qclass),  # CLASS: IN
+    #         int_to_bytes(self.ttl, 8),        # TTL: 60
+    #         int_to_bytes(4),                  # RDLENGTH: 4 octets
+    #         _bytes(int(octet) for octet in self.address.split('.')),
+    #     ))
+    
+    # DONE: Extract the query from the request
+    # def from_bytes(cls, data):
+    #     ini = 12
+    #     lon = _intify(data[ini])
+    #     labels = []
+    #     while lon != 0:
+    #         part = data[ini + 1:ini + lon + 1]
+    #         labels.append(part.decode("latin-1"))
+    #         ini += lon + 1
+    #         lon = _intify(data[ini])
+    #     rrtype = bytes_to_int(data[ini + 1:ini + 3])
+    #     qclass = bytes_to_int(data[ini + 3:ini + 5])
+    #     return cls(rrtype, tuple(labels), qclass)
+    
+    @staticmethod
+    def getQuery(data):
+        begin = 12
+        messageSize = int(data[12])
+        labels = []
+        query = dict()
+        
+        while messageSize != 0:
+            part = data[begin + 1: begin + messageSize + 1]
+            labels.append(part.decode("latin-1"))
+            begin += messageSize + 1
+            messageSize = int(data[begin])
+        
+        rrtype = (data[begin + 1] << 8) + data[begin + 2]
+        qclass = (data[begin + 3] << 8) + data[begin + 4]
+        
+        # python rules because that's a dict to anything
+        query["rrtype"] = rrtype
+        query["qclass"] = qclass
+        query["hostparts"] = labels
+        
+        return query
+    
+    
