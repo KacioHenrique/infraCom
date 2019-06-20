@@ -1,39 +1,66 @@
-# https://askubuntu.com/questions/907246/how-to-disable-systemd-resolved-in-ubuntu
-
 import socket
-import argparse
+import json
 
-clientSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+lastCounter = 0
+localArchives = []
 
-dnsIP = "172.31.91.59"
-dnsPort = 53
+## check recv messages
+def ifMessageRecvs(lastCounter):
+	msg, server = clientSocket.recvfrom(1024)
+	msgJSON = json.loads(msg)
 
-try:
-	clientSocket.connect((dnsIP, dnsPort))
-	print("connect dns")
-except Exception as e:
-	print(e)
-	pass
+	if lastCounter == msgJSON["order"] - 1:
+		lastCounter = msgJSON["order"]
+		
+		if msgJSON["type"] == "archives":
+			localArchives = msgJSON["archives"]
+
+	else:
+		print("discarded message")
+		
+
+def printMenu():
+	print("***** MENU *****")
+	print("1. Ver lista de arquivos disponíveis no server")
+	print("2. Download de arquivo")
+	print("3. Encerrar")
 	
-try:
-	hostname = input("Hostname? ")
-
-	clientSocket.send(hostname.encode()) # send hostname to server
-	serverIP = clientSocket.recv(1024) # receive from server
-	print("serverIP = " + str(serverIP))
+def printArchives():
+	print("***** ARQUIVOS DISPONIVEIS *****")
+	for i in localArchives:
+		print(i)
 	
-	clientSocket.close()
-	clientSocket.connect((dnsIP, dnsPort))
+## main
+if __name__ == "__main__":
+	counterToSend = 0
+
+	clientSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 	
-	while 1:
-		data = clientSocket.recv(1024)
+	serverIP = socket.gethostbyname("localhost")  # Endereco IP do Servidor
+	serverPort = 5000
+	dest = (serverIP, serverPort)
+	
+	## connection
+	connectMessage = {
+		"type": "connect", 
+		"order": counterToSend
+	}
+	
+	clientSocket.sendto(bytes(json.dumps(connectMessage), encoding='latin-1'), dest)
+	counterToSend += 1
+	
+	printMenu()
+	
+	while True:
+		ifMessageRecvs(lastCounter)
 
-except KeyboardInterrupt:
-	escape = True
-except Exception as e:
-	print(e)
-	clientSocket.close()
-
-clientSocket.close()
-print("\nClose socket")
-
+		command = input()
+	
+		if command == 1:
+			printArchives()
+		elif command == 2:
+			pass
+		elif command == 3:
+			clientSocket.close()
+			print("\nClose socket")
+			

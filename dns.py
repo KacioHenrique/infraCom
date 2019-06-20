@@ -15,10 +15,22 @@ sock.bind((ip,port))
 manager = DNSManager()
 
 printf(ip)
-
 printf("dns server running")
+
 while 1: 
     data, address = sock.recvfrom(512)
+    
+    # check if the message is to update something
+    msg = [chr(b) for b in data]
+    msg = "".join(msg)
+    parts = msg.split("<>")
+    if  parts[0] in ["UPDATE"]:
+        protocol, hostname, ip = parts
+        DNSManager.registerHost(hostname, ip)
+        i = DNSManager.getHostByName(hostname)
+        print(hostname, i)
+        
+        continue # break the flux because it was not a DNS request
     
     printf(address)
     printf("id")

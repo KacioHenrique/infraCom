@@ -1,3 +1,5 @@
+from DNSManager import DNSManager
+
 def printf(message):
     print(str(message))
     with open('log.txt', 'a+') as f:
