@@ -170,6 +170,9 @@ class DNSMessageManager:
         ttl = bytes([0,0,0,60])
         rdlength = bytes([0,4])
         
+        print("----------------")
+        print("query is:", query)
+        
         hostname = ".".join(query["hostparts"])
         host = DNSManager.getHostByName(hostname)
         pt = host.split(".")
@@ -194,12 +197,19 @@ class DNSMessageManager:
         
         while messageSize != 0:
             part = data[begin + 1: begin + messageSize + 1]
+            # print()
+            # print()
+            # print("//-----------")
+            # print(messageSize, part)
+            # print()
+            # print()
             labels.append(part.decode("latin-1"))
             begin += messageSize + 1
             messageSize = int(data[begin])
         
         rrtype = (data[begin + 1] << 8) + data[begin + 2]
         qclass = (data[begin + 3] << 8) + data[begin + 4]
+        # print(rrtype, qclass)
         
         # python rules because that's a dict to anything
         query["rrtype"] = rrtype

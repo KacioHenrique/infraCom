@@ -3,6 +3,8 @@ import json
 import sys
 import select
 import time
+from random import randint
+from DNSMessageManager import DNSMessageManager
 
 millis_now = lambda: int(round(time.time() * 1000))
 
@@ -209,11 +211,78 @@ def setup_connection():
 	
 	return clientSocket, dest
 
+def buildDNSMessage(host):
+	message = bytearray([])
+	transactionID = bytearray([randint(0, 0xff), randint(0, 0xff)])
+	
+	# Build the header properly
+	data = transactionID + bytearray([0,0])
+	flags = DNSMessageManager.getFlags(data)
+	flags["RD"] = 1
+	data = DNSMessageManager.modifyHeader(data, flags)
+	
+	# build the QD and so on
+	QDCOUNT = bytearray([0,1])
+	ANCOUNT = bytearray([0,0])
+	NSCOUNT = bytearray([0,0])
+	ARCOUNT = bytearray([0,0])
+	data = data + QDCOUNT + ANCOUNT + NSCOUNT + ARCOUNT
+	
+	# build the host query
+	parts = host.split(".")
+	hostFormat = bytearray([])
+	for pt in parts:
+		p1 = bytearray([len(pt)])
+		p2 = bytes(pt, encoding='utf-8')
+		hostFormat = hostFormat + p1 + p2
+	hostFormat += bytearray([0])
+	data += hostFormat
+	
+	# set the type of the message
+	rrtype = bytearray([0,1])
+	qclass = bytearray([0,1])
+	data += rrtype + qclass
+	
+	return bytes(data)
+
+
+def serverIPFromDNS(hostname):
+	ip = ""
+
+	HOST = socket.gethostbyname("localhost")  # Endereco IP do Servidor
+	try:
+	    HOST = socket.gethostbyname(socket.gethostname())
+	except:
+	    HOST = socket.gethostbyname("localhost")
+	
+	PORT = 53            # Porta que o Servidor esta
+	with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp:
+		dest = (HOST, PORT)
+		udp.bind(('', 0))
+		message = buildDNSMessage(hostname)
+		x = udp.sendto(message, dest)
+		ans, address = udp.recvfrom(512)
+		ip = getIp(ans)
+	
+	return ip
+
+def getIp(data):
+	address = []
+	dt = bytearray(data)
+	
+	for pt in dt[-4:]:
+		address += [str(int(pt))]
+	
+	return ".".join(address)
 
 ## main
 if __name__ == "__main__":
 	lastCounter = -1
 	localArchives = []
+	
+	# TODO: use the IP to request data from the server
+	ip = serverIPFromDNS("www.pudim.com")
+	print(ip)
 
 	clientSocket, dest = setup_connection()
 	status, localArchives = connect_to_server(clientSocket, dest)

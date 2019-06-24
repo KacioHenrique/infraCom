@@ -19,6 +19,7 @@ printf("dns server running")
 
 while 1: 
     data, address = sock.recvfrom(512)
+    print("address bitch:", address)
     
     # check if the message is to update something
     msg = [chr(b) for b in data]
@@ -33,7 +34,7 @@ while 1:
         continue # break the flux because it was not a DNS request
     
     printf(address)
-    printf("id")
+    printf("id: ")
     printf(DNSMessageManager.getId(data))
     printf("flags:")
     printf(DNSMessageManager.getFlags(data))
