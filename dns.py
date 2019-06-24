@@ -1,3 +1,6 @@
+# TODO: Send a response query to update the nameserver in the dns
+
+
 import socket
 from DNSManager import DNSManager
 from DNSMessageManager import DNSMessageManager
