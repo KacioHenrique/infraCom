@@ -11,8 +11,8 @@ class Server():
     def __init__(self,dnsPort,dnsIp):
         self.ip = dnsIp
         self.port = dnsPort
-        #self.connectDns()
-        self.connectClient()
+        self.notifyDNS("172.31.91.59", "caio.com")
+        # self.connectClient()
         
     def connectDns(self):
         sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
@@ -161,6 +161,24 @@ class Server():
     				resend = False
     	
     	return recv, ans
-                    
+    
+    def notifyDNS(self, dnsip, hostname):
+        HOST = socket.gethostbyname("localhost")  # Endereco IP do Servidor
+        try:
+            HOST = socket.gethostbyname(socket.gethostname())
+        except:
+            HOST = socket.gethostbyname("localhost")
+        
+        PORT = 53
+        dest = (HOST, PORT)
+        command = "UPDATE"
+        message = bytes("<>".join([command, hostname, HOST]), encoding="latin-1")
+        print(message)
+        
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp:
+            udp.sendto(message, dest)
+            print("sent message!")
+        
+
 server = Server(0,'')
 server.connectClient()
