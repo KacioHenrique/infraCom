@@ -198,14 +198,14 @@ def send_message(clientSocket, dest, msg):
 	return recv, ans
 	
 
-def setup_connection():
+def setup_connection(serverIP):
 	'''
 	Configura dados de conexão socket udp
 	'''
 	clientSocket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 	clientSocket.setblocking(False)
 	
-	serverIP = socket.gethostbyname("localhost")  # Endereco IP do Servidor
+	# serverIP = socket.gethostbyname("localhost")  # Endereco IP do Servidor
 	serverPort = 5001
 	dest = (serverIP, serverPort)
 	
@@ -266,6 +266,26 @@ def serverIPFromDNS(hostname):
 	
 	return ip
 
+def serverIPFromDNSByIp(hostname, dnsip):
+	ip = ""
+
+	HOST = socket.gethostbyname("localhost")  # Endereco IP do Servidor
+	try:
+	    HOST = socket.gethostbyname(socket.gethostname())
+	except:
+	    HOST = socket.gethostbyname("localhost")
+	
+	PORT = 53            # Porta que o Servidor esta
+	with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp:
+		dest = (dnsip, PORT)
+		udp.bind(('', 0))
+		message = buildDNSMessage(hostname)
+		x = udp.sendto(message, dest)
+		ans, address = udp.recvfrom(512)
+		ip = getIp(ans)
+	
+	return ip
+
 def getIp(data):
 	address = []
 	dt = bytearray(data)
@@ -281,10 +301,14 @@ if __name__ == "__main__":
 	localArchives = []
 	
 	# TODO: use the IP to request data from the server
-	ip = serverIPFromDNS("www.pudim.com")
+	# dnsip = input("Digite o ip do DNS que deseja utilizar: ")
+	# ip = serverIPFromDNSByIp("www.pudim.com", "8.8.8.8")
+	host = input("digite o endereço do servidor que deseja acessar: ")
+	ip = serverIPFromDNS(host)
+	
 	print(ip)
 
-	clientSocket, dest = setup_connection()
+	clientSocket, dest = setup_connection(ip)
 	status, localArchives = connect_to_server(clientSocket, dest)
 	print(status , localArchives)
 	printMenu()
