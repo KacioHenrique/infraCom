@@ -10,7 +10,7 @@ class Server():
     archiveList = ArchiveList()
 
     def __init__(self):
-        self.notifyDNS("infra.com", "172.31.91.59")
+        self.notifyDNS("infra.com", "172.22.44.108")
 
     def connectClient(self):
         HOST = ''
@@ -159,13 +159,14 @@ class Server():
         except:
             HOST = socket.gethostbyname("localhost")
 
+        help = HOST
         if dnsip != "127.0.0.1":
             HOST = dnsip
         
         PORT = 53
         dest = (HOST, PORT)
         command = "UPDATE"
-        message = bytes("<>".join([command, hostname, HOST]), encoding="latin-1")
+        message = bytes("<>".join([command, hostname, help]), encoding="latin-1")
         
         
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp:
