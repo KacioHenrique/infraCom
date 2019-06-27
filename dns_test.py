@@ -11,7 +11,7 @@ dest = (HOST, PORT)
 
 print(HOST)
 
-udp.sendto (b'UPDATE<>caio.com<>2.2.4.16', dest)
+udp.sendto (b'UPDATE<>infra.com<>2.2.4.16', dest)
 print("sent message!")
     
 udp.close()
