@@ -222,7 +222,7 @@ def serverIPFromDNSByIp(hostname, dnsip="127.0.0.1"):
 	
 	PORT = 53            # Porta que o Servidor esta
 	with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp:
-		dest = (dnsip, PORT)
+		dest = (HOST, PORT)
 		udp.bind(('', 0))
 		message = buildDNSMessage(hostname)
 		x = udp.sendto(message, dest)
