@@ -16,6 +16,9 @@ class Server():
         HOST = ''
         PORT = 5001
         counter = 0
+        
+        t = millis_now()
+        waitTimeout = 60000
             
         udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         udp.setblocking(False)
@@ -38,6 +41,9 @@ class Server():
 
                 elif msgJSON["type"] == "request":
                     self.serveFile(udp, adrss, msgJSON["value"])
+                
+                elif msgJSON["type"] == "ENDCONNECTION":
+                    break
             
                 else:
                     error = {
@@ -48,12 +54,15 @@ class Server():
                     }
                     
                     ServerUtils.sendJson(udp, adrss, error)
-                    
+                
+                t = millis_now()
             except:
+                if millis_now() - t > waitTimeout:
+                    break
                 pass
             
+        print("connection finished")
         udp.close()
-    
     
     
     ##################################
@@ -65,12 +74,14 @@ class Server():
         # print(stream)
         print(filename)
         
-        self.serveData(connection, address, "archives", stream)
-        return True
+        res = self.serveData(connection, address, "archives", stream)
+        return res
         
     def serveData(self, connection, address, msgtype, stream, timeout=3000, max_timeout=500):
         n = 0
         oldn = 0
+        
+        countTry = 0
 
         while n < len(stream):
             package = {
@@ -84,12 +95,17 @@ class Server():
             
             sent = self.sendWithTimeout(connection, address, package, timeout, max_timeout)
             print("n", n, len(stream))
-            # if not sent:
-            #     return False
-            # else:
-            oldn = n
-            n += min(512, len(stream) - n)
-            print("*n", n, len(stream))
+            if not sent:
+                countTry += 1
+                if countTry >= 5:
+                    return False
+                
+                pass
+            else:
+                countTry = 0
+                oldn = n
+                n += min(512, len(stream) - n)
+                print("*n", n, len(stream))
         
         package = {
             "type": "END", 
@@ -100,8 +116,8 @@ class Server():
         
         sent = self.sendWithTimeout(connection, address, package, timeout, max_timeout)
         
-        if not sent:
-            return False
+        # if not sent:
+        #     return False
         
         return True
     
@@ -111,7 +127,6 @@ class Server():
         t_total = millis_now()
         res = dict()
         
-        print(1)
         while millis_now() - t_total < max_timeout:
             while millis_now() - t < timeout:
                 try:
@@ -127,13 +142,10 @@ class Server():
                     pass
         
         # Failure streamming the file
-        print(2)
 
         if millis_now() - t_total > max_timeout:
-            print(3)
             return False
         
-        print(4)
         return True
     ##################################
     
@@ -159,4 +171,5 @@ class Server():
 
 
 server = Server()
-server.connectClient()
+while True:
+    server.connectClient()

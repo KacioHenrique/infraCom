@@ -115,6 +115,8 @@ def getPartsWithTimeout(connection, address, package, timeout=500, max_timeout=3
 	
 	shouldBreak = False
 	
+	print("Recendo mensagem...")
+	
 	# TODO: Implement package numbering 
 	while millis_now() - t_total < max_timeout and not shouldBreak:
 		while millis_now() - t < timeout and not shouldBreak:
@@ -269,8 +271,19 @@ if __name__ == "__main__":
 					printMenu()
 
 				elif command == "3\n":
+					END = {
+						"type": "ENDCONNECTION",
+						"ord": 0,
+						"ordn": 0,
+						"value": ""
+					}
+					
+					# clientSocket.sendto(END, dest)
+					ServerUtils.sendJson(clientSocket, dest, END)
+					
 					clientSocket.close()
-					print("Close socket")
+					print("Bye Bye ;)")
+					
 					exit(0)
 			else: 
 				print('eof')
