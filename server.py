@@ -10,7 +10,7 @@ class Server():
     archiveList = ArchiveList()
 
     def __init__(self):
-        self.notifyDNS("172.31.91.59", "infra.com")
+        self.notifyDNS("infra.com", "172.31.91.59")
 
     def connectClient(self):
         HOST = ''
@@ -152,12 +152,15 @@ class Server():
     ##################################
     ## DNS Zone
     ##################################
-    def notifyDNS(self, dnsip, hostname):
+    def notifyDNS(self, hostname, dnsip="127.0.0.1"):
         HOST = socket.gethostbyname("localhost")  # Endereco IP do Servidor
         try:
             HOST = socket.gethostbyname(socket.gethostname())
         except:
             HOST = socket.gethostbyname("localhost")
+
+        if dnsip != "127.0.0.1":
+            HOST = dnsip
         
         PORT = 53
         dest = (HOST, PORT)

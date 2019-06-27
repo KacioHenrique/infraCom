@@ -208,7 +208,7 @@ def serverIPFromDNS(hostname):
 	return ip
 
 
-def serverIPFromDNSByIp(hostname, dnsip):
+def serverIPFromDNSByIp(hostname, dnsip="127.0.0.1"):
 	ip = ""
 
 	HOST = socket.gethostbyname("localhost")  # Endereco IP do Servidor
@@ -216,6 +216,9 @@ def serverIPFromDNSByIp(hostname, dnsip):
 		HOST = socket.gethostbyname(socket.gethostname())
 	except:
 		HOST = socket.gethostbyname("localhost")
+
+	if dnsip != "127.0.0.1":
+		HOST = dnsip
 	
 	PORT = 53            # Porta que o Servidor esta
 	with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp:
@@ -246,7 +249,7 @@ if __name__ == "__main__":
 	# dnsip = input("Digite o ip do DNS que deseja utilizar: ")
 	# ip = serverIPFromDNSByIp("www.google.com.br", "8.8.8.8")
 	host = input("Digite o endereço do servidor que deseja acessar: ")
-	ip = serverIPFromDNS(host)
+	ip = serverIPFromDNSByIp(host)
 	
 	print("IP do servidor: " + str(ip))
 
